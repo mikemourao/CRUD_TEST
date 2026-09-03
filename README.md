@@ -43,6 +43,7 @@ O projeto reúne uma interface construída com React e uma API RESTful em NestJS
 | Validações da API | Implementado |
 | Banco de dados MySQL | Implementado |
 | Swagger UI | Implementado |
+| Login com e-mail ou matrícula | Implementado |
 | Cadastro no frontend | Implementado |
 | Visualização no frontend | Implementado |
 | Edição no frontend | Implementado |
@@ -164,6 +165,10 @@ DB_DATABASE=wenlock
 DB_SYNCHRONIZE=false
 DB_RUN_MIGRATIONS=true
 DB_LOGGING=false
+
+DEFAULT_USER_EMAIL=milena.santana@energy.org.br
+DEFAULT_USER_REGISTRATION=000001
+DEFAULT_USER_PASSWORD=abc123
 ```
 
 Os arquivos `.env` são ignorados pelo Git. Apenas os arquivos `.env.example`, sem segredos reais, devem ser versionados.
@@ -231,11 +236,25 @@ Base URL: `http://localhost:3000/api`
 
 | Método | Endpoint | Descrição |
 | --- | --- | --- |
+| `POST` | `/auth/login` | Autentica por e-mail ou matrícula e senha |
 | `POST` | `/users` | Cadastra um usuário |
 | `GET` | `/users` | Lista usuários |
 | `GET` | `/users/:id` | Consulta um usuário pelo UUID |
 | `PATCH` | `/users/:id` | Atualiza parcialmente um usuário |
 | `DELETE` | `/users/:id` | Exclui um usuário |
+
+### Usuário padrão
+
+O backend cria ou atualiza o usuário padrão ao iniciar:
+
+```text
+Nome: Milena Santana Borges
+E-mail: milena.santana@energy.org.br
+Matrícula: 000001
+Senha: abc123
+```
+
+As credenciais podem ser configuradas pelas variáveis `DEFAULT_USER_*`. A senha é armazenada exclusivamente como hash `bcrypt`.
 
 ### Busca e paginação
 

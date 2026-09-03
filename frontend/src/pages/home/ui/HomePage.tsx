@@ -7,7 +7,12 @@ const formattedDate = new Intl.DateTimeFormat('pt-BR', {
   year: 'numeric',
 }).format(new Date())
 
-export function HomePage() {
+interface HomePageProps {
+  userName: string
+}
+
+export function HomePage({ userName }: HomePageProps) {
+  const firstName = userName.trim().split(/\s+/)[0]
   return (
     <Box sx={{ width: '100%' }}>
       <Typography component="h1" sx={{ mb: 1, color: '#0b2b25', fontSize: { xs: 30, md: 38 }, fontWeight: 700, lineHeight: 1.2 }}>
@@ -26,7 +31,7 @@ export function HomePage() {
       >
         <Box>
           <Typography component="h2" sx={{ fontSize: 18, fontWeight: 700, color: '#0b2b25', lineHeight: 1.35 }}>
-            Olá Millena!
+            Olá {firstName}!
           </Typography>
           <Typography sx={{ fontSize: 12, fontWeight: 400, color: '#0b2b25', mt: 0.25, textTransform: 'capitalize' }}>
             {formattedDate}

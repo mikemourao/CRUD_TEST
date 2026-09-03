@@ -3,13 +3,21 @@ import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded'
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded'
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
 import { AppBar, Avatar, Box, ClickAwayListener, IconButton, ListItemButton, Paper, Popper, Toolbar, Typography } from '@mui/material'
+import type { User } from '@entities/user'
 
 interface HeaderProps {
+  user: User
   sidebarWidth: number
   onMenuClick: () => void
+  onLogout: () => void
 }
 
-export function Header({ sidebarWidth, onMenuClick }: HeaderProps) {
+function getInitials(name: string) {
+  const names = name.trim().split(/\s+/)
+  return `${names[0]?.[0] ?? ''}${names.at(-1)?.[0] ?? ''}`.toUpperCase()
+}
+
+export function Header({ user, sidebarWidth, onMenuClick, onLogout }: HeaderProps) {
   const profileAnchorRef = useRef<HTMLDivElement | null>(null)
   const closeTimerRef = useRef<number | null>(null)
   const [profileOpen, setProfileOpen] = useState(false)
@@ -87,7 +95,7 @@ export function Header({ sidebarWidth, onMenuClick }: HeaderProps) {
           sx={{ position: 'relative', cursor: 'pointer', outline: 'none', '&:focus-visible': { borderRadius: '50%', boxShadow: '0 0 0 3px rgba(8, 172, 193, .3)' } }}
         >
           <Avatar sx={{ width: 35, height: 35, bgcolor: '#07202c', border: '2px solid #00b8cf' }}>
-            <Typography sx={{ color: '#fff', fontSize: 12, fontWeight: 600 }}>MS</Typography>
+            <Typography sx={{ color: '#fff', fontSize: 12, fontWeight: 600 }}>{getInitials(user.name)}</Typography>
           </Avatar>
           <Box sx={{ position: 'absolute', right: -3, bottom: -2, width: 14, height: 14, display: 'grid', placeItems: 'center', borderRadius: '50%', bgcolor: '#fff', border: '1px solid #cfd3d6' }}>
             <KeyboardArrowDownRoundedIcon sx={{ color: '#52625f', fontSize: 13 }} />
@@ -124,13 +132,13 @@ export function Header({ sidebarWidth, onMenuClick }: HeaderProps) {
               }}
             >
               <Box sx={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 1, mb: 0.75 }}>
-                <Avatar sx={{ width: 31, height: 31, bgcolor: '#143b36', fontSize: 11 }}>MS</Avatar>
+                <Avatar sx={{ width: 31, height: 31, bgcolor: '#143b36', fontSize: 11 }}>{getInitials(user.name)}</Avatar>
                 <Box sx={{ minWidth: 0 }}>
-                  <Typography noWrap sx={{ color: '#0099ae', fontSize: 12, fontWeight: 600 }}>Milena Santana Borges</Typography>
-                  <Typography noWrap sx={{ color: '#6b7775', fontSize: 10 }}>milena.santana@energy.org.br</Typography>
+                  <Typography noWrap sx={{ color: '#0099ae', fontSize: 12, fontWeight: 600 }}>{user.name}</Typography>
+                  <Typography noWrap sx={{ color: '#6b7775', fontSize: 10 }}>{user.email}</Typography>
                 </Box>
               </Box>
-              <ListItemButton onClick={closeProfile} sx={{ minHeight: 34, px: 0.5, borderRadius: 0.5, color: '#0b2b25' }}>
+              <ListItemButton onClick={onLogout} sx={{ minHeight: 34, px: 0.5, borderRadius: 0.5, color: '#0b2b25' }}>
                 <LogoutRoundedIcon sx={{ mr: 1, fontSize: 19 }} />
                 <Typography sx={{ fontSize: 12, fontWeight: 500 }}>Sair</Typography>
               </ListItemButton>
