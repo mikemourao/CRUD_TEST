@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined'
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined'
-import { Alert, Box, Button, CircularProgress, IconButton, Paper, TextField, Typography } from '@mui/material'
+import { Alert, Box, Button, CircularProgress, IconButton, Paper, Snackbar, TextField, Typography } from '@mui/material'
 import { login } from '@entities/session'
 import type { User } from '@entities/user'
 import wenlockLogo from '@shared/assets/wenlock-logo.svg'
@@ -16,6 +16,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
   const [showPassword, setShowPassword] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [forgotPasswordNoticeOpen, setForgotPasswordNoticeOpen] = useState(false)
 
   const submit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -76,10 +77,20 @@ export function LoginPage({ onLogin }: LoginPageProps) {
         <Button type="submit" variant="contained" disableElevation disabled={!identifier.trim() || !password || submitting} sx={{ height: 48, bgcolor: '#079bb1', color: '#fff', fontSize: 14, fontWeight: 700 }}>
           {submitting ? <CircularProgress size={19} color="inherit" /> : 'Entrar'}
         </Button>
-        <Button type="button" variant="text" sx={{ alignSelf: 'center', mt: 1, color: '#079bb1', fontSize: 11, fontWeight: 600 }}>
+        <Button type="button" variant="text" onClick={() => setForgotPasswordNoticeOpen(true)} sx={{ alignSelf: 'center', mt: 1, color: '#079bb1', fontSize: 11, fontWeight: 600 }}>
           Esqueci minha senha
         </Button>
       </Paper>
+      <Snackbar
+        open={forgotPasswordNoticeOpen}
+        autoHideDuration={5000}
+        onClose={() => setForgotPasswordNoticeOpen(false)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert severity="info" variant="filled" onClose={() => setForgotPasswordNoticeOpen(false)}>
+          Este recurso será implementado em breve. Agradecemos a sua compreensão.
+        </Alert>
+      </Snackbar>
     </Box>
   )
 }

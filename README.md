@@ -60,7 +60,8 @@ wenlock/
 │   │   ├── app/               # Inicialização, providers e rotas
 │   │   ├── pages/             # Páginas da aplicação
 │   │   ├── widgets/           # Blocos de interface reutilizáveis
-│   │   ├── entities/          # Tipos e acesso a dados das entidades
+│   │   ├── features/          # Casos de uso: cadastro, edição e exclusão
+│   │   ├── entities/          # Usuários, sessão, tipos e acesso à API
 │   │   └── shared/            # API client, assets e recursos compartilhados
 │   ├── .env.example
 │   └── package.json
@@ -68,6 +69,7 @@ wenlock/
 │   ├── src/
 │   │   ├── common/            # Contratos e recursos compartilhados
 │   │   ├── database/          # Migrations do banco de dados
+│   │   ├── modules/auth/      # Autenticação e usuário padrão
 │   │   └── modules/users/     # Entidade, DTOs, serviço e controller
 │   ├── .env.example
 │   └── package.json
@@ -107,7 +109,7 @@ A senha é transformada em hash bcrypt antes da persistência, possui `select: f
 
 ## Pré-requisitos
 
-- Node.js 20 LTS, 22 LTS ou 24+
+- Node.js 20.19+, 22.12+ ou 24+
 - Yarn 1.22.22, disponibilizado pelo Corepack
 - Docker Desktop com suporte a Docker Compose
 
@@ -115,11 +117,18 @@ A senha é transformada em hash bcrypt antes da persistência, possui `select: f
 
 ## Instalação
 
-Na raiz do projeto, habilite o Yarn e instale as dependências:
+Clone o repositório e acesse sua raiz:
+
+```bash
+git clone https://github.com/mikemourao/CRUD_TEST.git
+cd CRUD_TEST
+```
+
+Habilite o Yarn e instale as dependências:
 
 ```bash
 corepack enable yarn
-yarn install
+yarn install --frozen-lockfile
 ```
 
 Crie os arquivos locais de ambiente a partir dos exemplos.
@@ -183,7 +192,7 @@ docker compose up -d mysql
 
 O banco estará disponível em `localhost:3307`. Na primeira inicialização da API, a migration cria automaticamente as tabelas `users` e `migrations`.
 
-Para verificar o container:
+Antes de iniciar a API, aguarde o status do container ficar `healthy`:
 
 ```bash
 docker compose ps mysql
@@ -227,7 +236,7 @@ yarn api:dev       # somente backend
 yarn api:build
 yarn api:lint
 yarn api:test
-yarn api:start     # backend compilado
+yarn api:start     # executa o backend compilado; requer yarn api:build antes
 ```
 
 ## API de usuários
@@ -242,6 +251,22 @@ Base URL: `http://localhost:3000/api`
 | `GET` | `/users/:id` | Consulta um usuário pelo UUID |
 | `PATCH` | `/users/:id` | Atualiza parcialmente um usuário |
 | `DELETE` | `/users/:id` | Exclui um usuário |
+
+### Login
+
+Exemplo de autenticação com e-mail:
+
+```http
+POST /api/auth/login
+Content-Type: application/json
+
+{
+  "identifier": "milena.santana@energy.org.br",
+  "password": "abc123"
+}
+```
+
+O campo `identifier` também aceita a matrícula do usuário.
 
 ### Usuário padrão
 
@@ -296,6 +321,7 @@ Validações:
 | `201` | Usuário cadastrado |
 | `204` | Usuário excluído |
 | `400` | Dados, UUID ou paginação inválidos |
+| `401` | E-mail, matrícula ou senha inválidos |
 | `404` | Usuário não encontrado |
 | `409` | E-mail ou matrícula duplicados |
 
@@ -320,6 +346,14 @@ Os dados ficam em um volume Docker persistente. Para parar os serviços sem apag
 ```bash
 docker compose down
 ```
+
+Para remover também todos os registros e recriar o banco do zero:
+
+```bash
+docker compose down -v
+```
+
+> Atenção: a opção `-v` remove definitivamente o volume local do MySQL e todos os usuários cadastrados.
 
 ## Qualidade e testes
 
