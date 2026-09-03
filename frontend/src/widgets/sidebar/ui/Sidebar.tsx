@@ -23,7 +23,7 @@ function SidebarContent({ collapsed = false, onNavigate }: { collapsed?: boolean
   const location = useLocation()
   const navigate = useNavigate()
   const isHome = location.pathname === '/'
-  const isUsers = location.pathname === '/usuarios'
+  const isUsers = location.pathname.startsWith('/usuarios')
 
   const goTo = (path: string) => {
     navigate(path)

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Box } from '@mui/material'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { HomePage } from '@pages/home'
+import { CreateUserPage } from '@pages/create-user'
 import { UsersPage } from '@pages/users'
 import { Header } from '@widgets/header'
 import { Sidebar } from '@widgets/sidebar'
@@ -39,6 +40,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/usuarios" element={<UsersPage />} />
+          <Route path="/usuarios/cadastrar" element={<CreateUserPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Box>

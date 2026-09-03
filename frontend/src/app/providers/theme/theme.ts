@@ -7,7 +7,7 @@ export const theme = createTheme({
     text: { primary: '#0b2130', secondary: '#69707d' },
   },
   typography: {
-    fontFamily: 'Inter, Roboto, Arial, sans-serif',
+    fontFamily: 'Manrope, Roboto, Arial, sans-serif',
     h5: { fontWeight: 500 },
     button: { textTransform: 'none', fontWeight: 600 },
   },

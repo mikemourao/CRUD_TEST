@@ -2,9 +2,15 @@ import { useCallback, useEffect, useState } from 'react'
 import AddRoundedIcon from '@mui/icons-material/AddRounded'
 import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded'
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded'
+import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded'
+import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded'
+import EditRoundedIcon from '@mui/icons-material/EditRounded'
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import FirstPageRoundedIcon from '@mui/icons-material/FirstPageRounded'
 import LastPageRoundedIcon from '@mui/icons-material/LastPageRounded'
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded'
+import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded'
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined'
 import {
   Alert,
   Box,
@@ -21,13 +27,21 @@ import {
   TableRow,
   TextField,
   Typography,
+  Snackbar,
 } from '@mui/material'
 import { getUsers, type PaginatedUsers } from '@entities/user'
+import { ViewUserDrawer } from '@features/view-user'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 const itemsPerPage = 15
 const emptyResult: PaginatedUsers = { data: [], total: 0, page: 1, limit: itemsPerPage, totalPages: 0 }
 
 export function UsersPage() {
+  const navigate = useNavigate()
+  const location = useLocation()
+  const [successMessage, setSuccessMessage] = useState<string | null>(
+    (location.state as { successMessage?: string } | null)?.successMessage ?? null,
+  )
   const [search, setSearch] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
   const [page, setPage] = useState(1)
@@ -35,6 +49,7 @@ export function UsersPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [reloadKey, setReloadKey] = useState(0)
+  const [viewingUserId, setViewingUserId] = useState<string | null>(null)
 
   useEffect(() => {
     const timeout = window.setTimeout(() => setDebouncedSearch(search.trim()), 350)
@@ -102,6 +117,7 @@ export function UsersPage() {
           }}
         />
         <Button
+          onClick={() => navigate('/usuarios/cadastrar')}
           variant="contained"
           disableElevation
           startIcon={<AddRoundedIcon sx={{ fontSize: '18px !important' }} />}
@@ -131,20 +147,123 @@ export function UsersPage() {
           </Box>
         ) : (
           <TableContainer sx={{ maxHeight: '100%' }}>
-            <Table stickyHeader size="small" aria-label="Lista de usuários">
+            <Table
+              stickyHeader
+              size="small"
+              aria-label="Lista de usuários"
+              sx={{ borderCollapse: 'separate', borderSpacing: '0 6px', px: 0.75 }}
+            >
               <TableHead>
                 <TableRow>
-                  <TableCell sx={{ fontWeight: 600 }}>Nome</TableCell>
-                  <TableCell sx={{ fontWeight: 600 }}>E-mail</TableCell>
-                  <TableCell sx={{ fontWeight: 600 }}>Matrícula</TableCell>
+                  <TableCell
+                    sx={{
+                      height: 25,
+                      py: 0,
+                      px: 1,
+                      bgcolor: '#0b1930',
+                      color: '#fff',
+                      border: 0,
+                      borderRadius: '3px 0 0 3px',
+                      fontSize: 8,
+                      fontWeight: 500,
+                    }}
+                  >
+                    Nome
+                  </TableCell>
+                  <TableCell
+                    align="center"
+                    sx={{
+                      width: 92,
+                      height: 25,
+                      py: 0,
+                      px: 0.5,
+                      bgcolor: '#0b1930',
+                      color: '#fff',
+                      border: 0,
+                      borderRadius: '0 3px 3px 0',
+                      fontSize: 8,
+                      fontWeight: 500,
+                    }}
+                  >
+                    Ações
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {result.data.map((user) => (
-                  <TableRow hover key={user.id}>
-                    <TableCell>{user.name}</TableCell>
-                    <TableCell>{user.email}</TableCell>
-                    <TableCell>{user.registration}</TableCell>
+                  <TableRow key={user.id} sx={{ '& td': { bgcolor: '#fff', borderTop: '1px solid #e4e4e4', borderBottom: '1px solid #e4e4e4' } }}>
+                    <TableCell sx={{ height: 31, py: 0, px: 1, borderLeft: '1px solid #e4e4e4', borderRadius: '3px 0 0 3px', fontSize: 8 }}>
+                      {user.name}
+                    </TableCell>
+                    <TableCell align="center" sx={{ height: 31, py: 0, px: 0.25, borderRight: '1px solid #e4e4e4', borderRadius: '0 3px 3px 0' }}>
+                      <IconButton
+                        type="button"
+                        aria-label={`Visualizar ${user.name}`}
+                        onClick={() => setViewingUserId(user.id)}
+                        size="small"
+                        sx={{
+                          p: 0.5,
+                          mx: 0.125,
+                          color: '#0b2930',
+                          borderRadius: 0.5,
+                          transition: 'background-color 150ms ease, color 150ms ease',
+                          '& .filled-action-icon': { display: 'none' },
+                          '&:hover': {
+                            bgcolor: '#069db4',
+                            color: '#fff',
+                            '& .outlined-action-icon': { display: 'none' },
+                            '& .filled-action-icon': { display: 'block' },
+                          },
+                        }}
+                      >
+                        <VisibilityOutlinedIcon className="outlined-action-icon" sx={{ fontSize: 15 }} />
+                        <VisibilityRoundedIcon className="filled-action-icon" sx={{ fontSize: 15 }} />
+                      </IconButton>
+                      <IconButton
+                        type="button"
+                        aria-label={`Editar ${user.name}`}
+                        size="small"
+                        sx={{
+                          p: 0.5,
+                          mx: 0.125,
+                          color: '#0b2930',
+                          borderRadius: 0.5,
+                          transition: 'background-color 150ms ease, color 150ms ease',
+                          '& .filled-action-icon': { display: 'none' },
+                          '&:hover': {
+                            bgcolor: '#069db4',
+                            color: '#fff',
+                            '& .outlined-action-icon': { display: 'none' },
+                            '& .filled-action-icon': { display: 'block' },
+                          },
+                        }}
+                      >
+                        <EditOutlinedIcon className="outlined-action-icon" sx={{ fontSize: 15 }} />
+                        <EditRoundedIcon className="filled-action-icon" sx={{ fontSize: 15 }} />
+                      </IconButton>
+                      <IconButton
+                        type="button"
+                        aria-label={`Excluir ${user.name}`}
+                        size="small"
+                        sx={{
+                          p: 0.5,
+                          mx: 0.125,
+                          color: '#0b1930',
+                          borderRadius: 0.5,
+                          transition: 'background-color 150ms ease, color 150ms ease',
+                          '& .filled-action-icon': { display: 'none' },
+                          '&:hover': {
+                            bgcolor: '#069db4',
+                            color: '#fff',
+                            '& .outlined-action-icon': { display: 'none' },
+                            '& .filled-action-icon': { display: 'block' },
+                          },
+                        }}
+                      >
+                        <DeleteOutlineRoundedIcon className="outlined-action-icon" sx={{ fontSize: 15 }} />
+                        <DeleteRoundedIcon className="filled-action-icon" sx={{ fontSize: 15 }} />
+                      </IconButton>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -165,6 +284,17 @@ export function UsersPage() {
           <Typography sx={{ fontSize: 8, ml: 0.25 }}>de {totalPages}</Typography>
         </Box>
       </Box>
+      <Snackbar
+        open={Boolean(successMessage)}
+        autoHideDuration={4000}
+        onClose={() => setSuccessMessage(null)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      >
+        <Alert severity="success" variant="filled" onClose={() => setSuccessMessage(null)}>
+          {successMessage}
+        </Alert>
+      </Snackbar>
+      <ViewUserDrawer userId={viewingUserId} onClose={() => setViewingUserId(null)} />
     </Box>
   )
 }

@@ -21,3 +21,10 @@ export interface GetUsersParams {
   limit: number
   signal?: AbortSignal
 }
+
+export interface CreateUserPayload {
+  name: string
+  email: string
+  registration: string
+  password: string
+}
