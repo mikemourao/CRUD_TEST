@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded'
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded'
-import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded'
 import PieChartRoundedIcon from '@mui/icons-material/PieChartRounded'
 import PersonRoundedIcon from '@mui/icons-material/PersonRounded'
 import { Box, Drawer, IconButton, List, ListItemButton, ListItemIcon, ListItemText, Typography } from '@mui/material'
@@ -11,6 +10,8 @@ import wenlockCollapsedLogo from '@shared/assets/wenlock-logo-collapsed.svg'
 import homeMenuIcon from '@shared/assets/home-menu-icon.svg'
 import usersMenuIcon from '@shared/assets/users-menu-icon.svg'
 import accessControlMenuIcon from '@shared/assets/access-control-menu-icon.svg'
+import accessControlCollapseIcon from '@shared/assets/access-control-collapse-icon.svg'
+import accessControlExpandIcon from '@shared/assets/access-control-expand-icon.svg'
 
 interface SidebarProps {
   width: number
@@ -53,8 +54,8 @@ function SidebarContent({ collapsed = false, onNavigate }: { collapsed?: boolean
         )}
       </Box>
 
-      <List sx={{ px: 1.5, py: 0 }}>
-        <ListItemButton selected={isHome} onClick={() => goTo('/')} sx={{ height: 40, borderRadius: 1, mb: 1, px: 1.5, color: '#fff', '&.Mui-selected': { color: '#071528', bgcolor: '#08acc1', '&:hover': { bgcolor: '#08acc1' } } }}>
+      <List sx={{ px: 1.5, py: 0, overflow: 'visible' }}>
+        <ListItemButton selected={isHome} onClick={() => goTo('/')} sx={{ width: collapsed ? 40 : 'auto', height: 40, mx: collapsed ? 'auto' : 0, borderRadius: 1, mb: 1, px: collapsed ? 0 : 1.5, justifyContent: 'center', color: '#fff', '&.Mui-selected': { color: '#071528', bgcolor: '#08acc1', '&:hover': { bgcolor: '#08acc1' } } }}>
           <ListItemIcon sx={{ minWidth: collapsed ? 0 : 30, mr: collapsed ? 0 : undefined, justifyContent: 'center' }}>
             {isHome ? (
               <PieChartRoundedIcon aria-hidden="true" sx={{ color: '#071528', fontSize: 21 }} />
@@ -65,13 +66,70 @@ function SidebarContent({ collapsed = false, onNavigate }: { collapsed?: boolean
           {!collapsed && <ListItemText primary="Home" primaryTypographyProps={{ fontSize: 12, fontWeight: isHome ? 700 : 600 }} />}
         </ListItemButton>
 
-        <ListItemButton onClick={() => setAccessOpen((open) => !open)} sx={{ height: 40, borderRadius: 1, px: 1, color: '#c7ced9' }}>
-          <ListItemIcon sx={{ minWidth: collapsed ? 0 : 24, mr: collapsed ? 0 : undefined, justifyContent: 'center' }}>
-            <Box component="img" src={accessControlMenuIcon} alt="" aria-hidden="true" sx={{ display: 'block', width: 20, height: 20, opacity: 0.72 }} />
-          </ListItemIcon>
-          {!collapsed && <ListItemText primary="Controle de Acesso" sx={{ minWidth: 0 }} primaryTypographyProps={{ fontSize: 11, fontWeight: 500, whiteSpace: 'nowrap' }} />}
-          {!collapsed && <ExpandMoreRoundedIcon sx={{ ml: 0.5, flexShrink: 0, color: '#c7ced9', fontSize: 18, transform: accessOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform .2s' }} />}
-        </ListItemButton>
+        <Box
+          sx={{
+            position: 'relative',
+            width: collapsed ? 40 : 'auto',
+            mx: collapsed ? 'auto' : 0,
+            '&:hover .collapsed-access-submenu, &:focus-within .collapsed-access-submenu': {
+              opacity: 1,
+              visibility: 'visible',
+              pointerEvents: 'auto',
+            },
+            '&:hover .access-control-button': collapsed ? { bgcolor: '#08acc1' } : undefined,
+          }}
+        >
+          <ListItemButton className="access-control-button" onClick={() => setAccessOpen((open) => !open)} sx={{ width: '100%', height: 40, borderRadius: 1, px: collapsed ? 0 : 1, justifyContent: 'center', color: '#c7ced9' }}>
+            <ListItemIcon sx={{ minWidth: collapsed ? 0 : 24, mr: collapsed ? 0 : undefined, justifyContent: 'center' }}>
+              <Box component="img" src={accessControlMenuIcon} alt="" aria-hidden="true" sx={{ display: 'block', width: 20, height: 20, opacity: collapsed ? 1 : 0.72 }} />
+            </ListItemIcon>
+            {!collapsed && <ListItemText primary="Controle de Acesso" sx={{ minWidth: 0 }} primaryTypographyProps={{ fontSize: 11, fontWeight: 500, whiteSpace: 'nowrap' }} />}
+            {!collapsed && (
+              <Box
+                component="img"
+                src={accessOpen ? accessControlCollapseIcon : accessControlExpandIcon}
+                alt=""
+                aria-hidden="true"
+                sx={{ display: 'block', width: 18, height: 18, ml: 0.5, flexShrink: 0 }}
+              />
+            )}
+          </ListItemButton>
+
+          {collapsed && accessOpen && (
+            <Box
+              className="collapsed-access-submenu"
+              sx={{
+                position: 'absolute',
+                top: 0,
+                left: '100%',
+                pl: 0.625,
+                opacity: 0,
+                visibility: 'hidden',
+                pointerEvents: 'none',
+                transition: 'opacity 150ms ease',
+                zIndex: (theme) => theme.zIndex.drawer + 3,
+              }}
+            >
+              <ListItemButton
+                selected={isUsers}
+                onClick={() => goTo('/usuarios')}
+                sx={{
+                  width: 185,
+                  height: 38,
+                  px: 1.5,
+                  borderRadius: 0.75,
+                  bgcolor: '#0799ad',
+                  color: '#071528',
+                  boxShadow: '2px 3px 6px rgba(0, 0, 0, 0.35)',
+                  '&:hover, &.Mui-selected, &.Mui-selected:hover': { bgcolor: '#08acc1' },
+                }}
+              >
+                <Typography component="span" sx={{ mr: 0.75, fontSize: 12, lineHeight: 1 }}>•</Typography>
+                <ListItemText primary="Usuários" primaryTypographyProps={{ fontSize: 12, fontWeight: 700 }} />
+              </ListItemButton>
+            </Box>
+          )}
+        </Box>
 
         {accessOpen && !collapsed && (
           <ListItemButton selected={isUsers} onClick={() => goTo('/usuarios')} sx={{ height: 42, pl: 4.8, borderRadius: 1, color: isUsers ? '#071528' : '#fff', '&.Mui-selected': { bgcolor: '#08acc1', '&:hover': { bgcolor: '#08acc1' } } }}>
@@ -116,7 +174,7 @@ export function Sidebar({ width, collapsed, mobileOpen, onMobileClose, onToggleC
             width,
             boxSizing: 'border-box',
             border: 0,
-            overflowX: 'hidden',
+            overflow: collapsed ? 'visible' : 'hidden',
             transition: (muiTheme) => muiTheme.transitions.create('width'),
           },
         }}
