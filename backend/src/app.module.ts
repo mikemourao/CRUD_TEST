@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CreateUsersTable1756814400000 } from './database/migrations/1756814400000-create-users-table';
 import { UsersModule } from './modules/users/users.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { UsersModule } from './modules/users/users.module';
       }),
     }),
     UsersModule,
+    AuthModule,
   ],
 })
 export class AppModule {}

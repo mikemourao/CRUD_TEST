@@ -1,2 +1,6 @@
+export { createUser } from './api/create-user'
+export { deleteUser } from './api/delete-user'
+export { getUser } from './api/get-user'
 export { getUsers } from './api/get-users'
-export type { PaginatedUsers, User } from './model/types'
+export { updateUser } from './api/update-user'
+export type { CreateUserPayload, PaginatedUsers, UpdateUserPayload, User } from './model/types'

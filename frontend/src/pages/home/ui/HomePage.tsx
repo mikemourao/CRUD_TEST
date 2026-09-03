@@ -1,5 +1,5 @@
 import { Box, Paper, Typography } from '@mui/material'
-import welcomeIllustration from '@shared/assets/welcome-illustration.png'
+import homeIllustration from '@shared/assets/home-illustration.svg'
 
 const formattedDate = new Intl.DateTimeFormat('pt-BR', {
   day: '2-digit',
@@ -7,10 +7,15 @@ const formattedDate = new Intl.DateTimeFormat('pt-BR', {
   year: 'numeric',
 }).format(new Date())
 
-export function HomePage() {
+interface HomePageProps {
+  userName: string
+}
+
+export function HomePage({ userName }: HomePageProps) {
+  const firstName = userName.trim().split(/\s+/)[0]
   return (
     <Box sx={{ width: '100%' }}>
-      <Typography component="h1" variant="h5" sx={{ mb: 0.75, fontSize: { xs: 24, md: 23 }, lineHeight: 1.2 }}>
+      <Typography component="h1" sx={{ mb: 1, color: '#0b2b25', fontSize: { xs: 30, md: 38 }, fontWeight: 700, lineHeight: 1.2 }}>
         Home
       </Typography>
 
@@ -25,10 +30,10 @@ export function HomePage() {
         }}
       >
         <Box>
-          <Typography component="h2" sx={{ fontSize: { xs: 19, md: 18 }, fontWeight: 600, color: '#0a1428', lineHeight: 1.2 }}>
-            Olá Millena!
+          <Typography component="h2" sx={{ fontSize: 18, fontWeight: 700, color: '#0b2b25', lineHeight: 1.35 }}>
+            Olá {firstName}!
           </Typography>
-          <Typography sx={{ fontSize: 10, color: '#0a1428', mt: 0.25, textTransform: 'capitalize' }}>
+          <Typography sx={{ fontSize: 12, fontWeight: 400, color: '#0b2b25', mt: 0.25, textTransform: 'capitalize' }}>
             {formattedDate}
           </Typography>
         </Box>
@@ -37,12 +42,12 @@ export function HomePage() {
           <Box sx={{ width: '100%', maxWidth: 322, textAlign: 'center' }}>
             <Box
               component="img"
-              src={welcomeIllustration}
+              src={homeIllustration}
               alt="Duas pessoas dando boas-vindas"
               sx={{ display: 'block', width: '100%', maxWidth: 310, maxHeight: { xs: 240, md: 240 }, objectFit: 'contain', mx: 'auto', mb: 1 }}
             />
-            <Box sx={{ height: 44, border: '1px solid #8b91a0', borderRadius: 1, px: 2, bgcolor: '#fff', display: 'grid', placeItems: 'center' }}>
-              <Typography sx={{ fontSize: 14, fontWeight: 600 }}>Bem-vindo ao WenLock!</Typography>
+            <Box sx={{ height: 48, border: '1px solid #8b91a0', borderRadius: 1, px: 2, bgcolor: '#fff', display: 'grid', placeItems: 'center' }}>
+              <Typography sx={{ color: '#0b2b25', fontSize: 16, fontWeight: 600 }}>Bem-vindo ao WenLock!</Typography>
             </Box>
           </Box>
         </Box>
