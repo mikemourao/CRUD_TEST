@@ -1,12 +1,16 @@
 import { useState } from 'react'
-import AdminPanelSettingsOutlinedIcon from '@mui/icons-material/AdminPanelSettingsOutlined'
 import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded'
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded'
 import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded'
-import HomeRoundedIcon from '@mui/icons-material/HomeRounded'
-import PersonOutlineRoundedIcon from '@mui/icons-material/PersonOutlineRounded'
+import PieChartRoundedIcon from '@mui/icons-material/PieChartRounded'
+import PersonRoundedIcon from '@mui/icons-material/PersonRounded'
 import { Box, Drawer, IconButton, List, ListItemButton, ListItemIcon, ListItemText, Typography } from '@mui/material'
 import { useLocation, useNavigate } from 'react-router-dom'
+import wenlockLogo from '@shared/assets/wenlock-logo.svg'
+import wenlockCollapsedLogo from '@shared/assets/wenlock-logo-collapsed.svg'
+import homeMenuIcon from '@shared/assets/home-menu-icon.svg'
+import usersMenuIcon from '@shared/assets/users-menu-icon.svg'
+import accessControlMenuIcon from '@shared/assets/access-control-menu-icon.svg'
 
 interface SidebarProps {
   width: number
@@ -32,39 +36,52 @@ function SidebarContent({ collapsed = false, onNavigate }: { collapsed?: boolean
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', bgcolor: '#0b1930', color: '#fff' }}>
-      <Box sx={{ px: collapsed ? 1.5 : 3, pt: 2.5, pb: 2, overflow: 'hidden' }}>
+      <Box
+        sx={{
+          height: 64,
+          px: collapsed ? 1.5 : 2.5,
+          display: 'flex',
+          alignItems: 'center',
+          overflow: 'hidden',
+          boxSizing: 'border-box',
+        }}
+      >
         {collapsed ? (
-          <Box sx={{ position: 'relative', width: 40, height: 31, mx: 'auto' }}>
-            <Typography sx={{ fontSize: 26, lineHeight: 1, fontWeight: 500, letterSpacing: '-1.5px', whiteSpace: 'nowrap' }}>
-              <Box component="span" sx={{ color: '#08b5cf' }}>W</Box>
-              <Box component="span" sx={{ color: '#fff' }}>L</Box>
-            </Typography>
-            <Box sx={{ position: 'absolute', right: 1, bottom: 0, width: 7, height: 7, borderRadius: '50%', bgcolor: '#08b5cf' }} />
-          </Box>
+          <Box component="img" src={wenlockCollapsedLogo} alt="WenLock" sx={{ display: 'block', width: 40, height: 32, objectFit: 'contain', mx: 'auto' }} />
         ) : (
-          <Typography sx={{ fontSize: 26, lineHeight: 1, fontWeight: 300, letterSpacing: '-1.2px', whiteSpace: 'nowrap' }}>
-            <Box component="span" sx={{ color: '#08b5cf' }}>Wen</Box>
-            <Box component="span" sx={{ fontWeight: 600 }}>Lock</Box>
-            <Box component="span" sx={{ color: '#08b5cf', fontWeight: 700 }}>.</Box>
-          </Typography>
+          <Box component="img" src={wenlockLogo} alt="WenLock" sx={{ display: 'block', width: 135, height: 'auto', maxWidth: '100%' }} />
         )}
       </Box>
 
       <List sx={{ px: 1.5, py: 0 }}>
-        <ListItemButton selected={isHome} onClick={() => goTo('/')} sx={{ minHeight: 38, borderRadius: 1, mb: 0.75, px: 1.5, '&.Mui-selected': { bgcolor: '#08acc1', '&:hover': { bgcolor: '#08acc1' } } }}>
-          <ListItemIcon sx={{ minWidth: collapsed ? 0 : 30, mr: collapsed ? 0 : undefined, color: isHome ? '#071528' : '#c7ced9', justifyContent: 'center' }}><HomeRoundedIcon fontSize="small" /></ListItemIcon>
-          {!collapsed && <ListItemText primary="Home" primaryTypographyProps={{ fontSize: 12, fontWeight: 700 }} />}
+        <ListItemButton selected={isHome} onClick={() => goTo('/')} sx={{ height: 40, borderRadius: 1, mb: 1, px: 1.5, color: '#fff', '&.Mui-selected': { color: '#071528', bgcolor: '#08acc1', '&:hover': { bgcolor: '#08acc1' } } }}>
+          <ListItemIcon sx={{ minWidth: collapsed ? 0 : 30, mr: collapsed ? 0 : undefined, justifyContent: 'center' }}>
+            {isHome ? (
+              <PieChartRoundedIcon aria-hidden="true" sx={{ color: '#071528', fontSize: 21 }} />
+            ) : (
+              <Box component="img" src={homeMenuIcon} alt="" aria-hidden="true" sx={{ display: 'block', width: 20, height: 20 }} />
+            )}
+          </ListItemIcon>
+          {!collapsed && <ListItemText primary="Home" primaryTypographyProps={{ fontSize: 12, fontWeight: isHome ? 700 : 600 }} />}
         </ListItemButton>
 
-        <ListItemButton onClick={() => setAccessOpen((open) => !open)} sx={{ minHeight: 40, borderRadius: 1, px: 1.5, color: '#c7ced9' }}>
-          <ListItemIcon sx={{ minWidth: collapsed ? 0 : 30, mr: collapsed ? 0 : undefined, color: '#c7ced9', justifyContent: 'center' }}><AdminPanelSettingsOutlinedIcon fontSize="small" /></ListItemIcon>
-          {!collapsed && <ListItemText primary="Controle de Acesso" primaryTypographyProps={{ fontSize: 12, fontWeight: 500, whiteSpace: 'nowrap' }} />}
-          {!collapsed && <ExpandMoreRoundedIcon fontSize="small" sx={{ transform: accessOpen ? 'rotate(0deg)' : 'rotate(-90deg)', transition: 'transform .2s' }} />}
+        <ListItemButton onClick={() => setAccessOpen((open) => !open)} sx={{ height: 40, borderRadius: 1, px: 1, color: '#c7ced9' }}>
+          <ListItemIcon sx={{ minWidth: collapsed ? 0 : 24, mr: collapsed ? 0 : undefined, justifyContent: 'center' }}>
+            <Box component="img" src={accessControlMenuIcon} alt="" aria-hidden="true" sx={{ display: 'block', width: 20, height: 20, opacity: 0.72 }} />
+          </ListItemIcon>
+          {!collapsed && <ListItemText primary="Controle de Acesso" sx={{ minWidth: 0 }} primaryTypographyProps={{ fontSize: 11, fontWeight: 500, whiteSpace: 'nowrap' }} />}
+          {!collapsed && <ExpandMoreRoundedIcon sx={{ ml: 0.5, flexShrink: 0, color: '#c7ced9', fontSize: 18, transform: accessOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform .2s' }} />}
         </ListItemButton>
 
         {accessOpen && !collapsed && (
-          <ListItemButton selected={isUsers} onClick={() => goTo('/usuarios')} sx={{ minHeight: 38, pl: 4.8, borderRadius: 1, color: isUsers ? '#071528' : '#c7ced9', '&.Mui-selected': { bgcolor: '#08acc1', '&:hover': { bgcolor: '#08acc1' } } }}>
-            <ListItemIcon sx={{ minWidth: 28, color: isUsers ? '#071528' : '#c7ced9' }}><PersonOutlineRoundedIcon sx={{ fontSize: 18 }} /></ListItemIcon>
+          <ListItemButton selected={isUsers} onClick={() => goTo('/usuarios')} sx={{ height: 42, pl: 4.8, borderRadius: 1, color: isUsers ? '#071528' : '#fff', '&.Mui-selected': { bgcolor: '#08acc1', '&:hover': { bgcolor: '#08acc1' } } }}>
+            <ListItemIcon sx={{ minWidth: 28, justifyContent: 'center' }}>
+              {isUsers ? (
+                <PersonRoundedIcon aria-hidden="true" sx={{ color: '#071528', fontSize: 21 }} />
+              ) : (
+                <Box component="img" src={usersMenuIcon} alt="" aria-hidden="true" sx={{ display: 'block', width: 20, height: 20 }} />
+              )}
+            </ListItemIcon>
             <ListItemText primary="Usuários" primaryTypographyProps={{ fontSize: 12, fontWeight: isUsers ? 700 : 500 }} />
           </ListItemButton>
         )}

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import AddRoundedIcon from '@mui/icons-material/AddRounded'
 import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded'
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded'
+import ClearRoundedIcon from '@mui/icons-material/ClearRounded'
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded'
 import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded'
 import EditRoundedIcon from '@mui/icons-material/EditRounded'
@@ -33,6 +34,7 @@ import {
 import { getUsers, type PaginatedUsers, type User } from '@entities/user'
 import { DeleteUserDialog } from '@features/delete-user'
 import { ViewUserDrawer } from '@features/view-user'
+import noSearchResultsIllustration from '@shared/assets/no-search-results.svg'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 const itemsPerPage = 15
@@ -41,6 +43,21 @@ const emptyResult: PaginatedUsers = { data: [], total: 0, page: 1, limit: itemsP
 interface PageNotification {
   message: string
   severity: AlertColor
+}
+
+function UsersTableHeader() {
+  return (
+    <TableHead>
+      <TableRow>
+        <TableCell sx={{ height: 36, py: 0, px: 1, bgcolor: '#0b1930', color: '#fff', border: 0, borderRadius: '3px 0 0 3px', fontSize: 14, fontWeight: 500 }}>
+          Nome
+        </TableCell>
+        <TableCell align="center" sx={{ width: 132, height: 36, py: 0, px: 0.5, bgcolor: '#0b1930', color: '#fff', border: 0, borderRadius: '0 3px 3px 0', fontSize: 14, fontWeight: 500 }}>
+          Ações
+        </TableCell>
+      </TableRow>
+    </TableHead>
+  )
 }
 
 export function UsersPage() {
@@ -117,6 +134,13 @@ export function UsersPage() {
                   <SearchRoundedIcon sx={{ fontSize: 17 }} />
                 </InputAdornment>
               ),
+              endAdornment: search ? (
+                <InputAdornment position="end" sx={{ ml: 0.25 }}>
+                  <IconButton aria-label="Limpar pesquisa" size="small" onClick={() => changeSearch('')} edge="end">
+                    <ClearRoundedIcon sx={{ fontSize: 18 }} />
+                  </IconButton>
+                </InputAdornment>
+              ) : undefined,
             },
           }}
           sx={{
@@ -136,7 +160,10 @@ export function UsersPage() {
         </Button>
       </Box>
 
-      <Paper elevation={1} sx={{ flex: 1, minHeight: 300, overflow: 'hidden', borderRadius: 0.75 }}>
+      <Paper
+        elevation={result.data.length === 0 && Boolean(debouncedSearch) && !loading && !error ? 0 : 1}
+        sx={{ flex: 1, minHeight: 300, overflow: 'hidden', borderRadius: 0.75, bgcolor: result.data.length === 0 && debouncedSearch ? 'transparent' : '#fff' }}
+      >
         {loading ? (
           <Box sx={{ height: '100%', display: 'grid', placeItems: 'center' }}>
             <CircularProgress size={28} />
@@ -146,6 +173,22 @@ export function UsersPage() {
             <Alert severity="error" action={<Button color="inherit" size="small" onClick={() => setReloadKey((key) => key + 1)}>Tentar novamente</Button>}>
               {error}
             </Alert>
+          </Box>
+        ) : result.data.length === 0 && debouncedSearch ? (
+          <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', gap: 1 }}>
+            <Table size="small" aria-hidden="true" sx={{ borderCollapse: 'separate', borderSpacing: 0 }}>
+              <UsersTableHeader />
+            </Table>
+            <Paper elevation={1} sx={{ flex: 1, display: 'grid', placeItems: 'center', borderRadius: 0.75, textAlign: 'center', px: 2 }}>
+              <Box>
+                <Box component="img" src={noSearchResultsIllustration} alt="Nenhum resultado encontrado" sx={{ width: { xs: 120, sm: 150 }, height: 'auto', mb: 1.5 }} />
+                <Typography sx={{ color: '#0b2b25', fontSize: 16, fontWeight: 700, mb: 0.5 }}>Nenhum Resultado Encontrado</Typography>
+                <Typography sx={{ color: '#40534f', fontSize: 12, fontWeight: 400, lineHeight: 1.35 }}>
+                  Não foi possível achar nenhum resultado para sua busca.<br />
+                  Tente refazer a pesquisa para encontrar o que busca.
+                </Typography>
+              </Box>
+            </Paper>
           </Box>
         ) : result.data.length === 0 ? (
           <Box sx={{ height: '100%', display: 'grid', placeItems: 'center', textAlign: 'center', px: 2 }}>
@@ -162,42 +205,7 @@ export function UsersPage() {
               aria-label="Lista de usuários"
               sx={{ borderCollapse: 'separate', borderSpacing: '0 6px', px: 0.75 }}
             >
-              <TableHead>
-                <TableRow>
-                  <TableCell
-                    sx={{
-                      height: 36,
-                      py: 0,
-                      px: 1,
-                      bgcolor: '#0b1930',
-                      color: '#fff',
-                      border: 0,
-                      borderRadius: '3px 0 0 3px',
-                      fontSize: 14,
-                      fontWeight: 500,
-                    }}
-                  >
-                    Nome
-                  </TableCell>
-                  <TableCell
-                    align="center"
-                    sx={{
-                      width: 132,
-                      height: 36,
-                      py: 0,
-                      px: 0.5,
-                      bgcolor: '#0b1930',
-                      color: '#fff',
-                      border: 0,
-                      borderRadius: '0 3px 3px 0',
-                      fontSize: 14,
-                      fontWeight: 500,
-                    }}
-                  >
-                    Ações
-                  </TableCell>
-                </TableRow>
-              </TableHead>
+              <UsersTableHeader />
               <TableBody>
                 {result.data.map((user) => (
                   <TableRow key={user.id} sx={{ '& td': { bgcolor: '#fff', borderTop: '1px solid #e4e4e4', borderBottom: '1px solid #e4e4e4' } }}>
