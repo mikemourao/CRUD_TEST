@@ -1,0 +1,28 @@
+{
+  "name": "wenlock",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "yarn@1.22.22",
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "dev": "concurrently --kill-others --names FRONTEND,BACKEND --prefix-colors cyan,magenta \"yarn web:dev\" \"yarn api:dev\"",
+    "build": "yarn web:build && yarn api:build",
+    "lint": "yarn web:lint && yarn api:lint",
+    "test": "yarn api:test",
+    "web:dev": "yarn workspace @wenlock/web dev",
+    "web:build": "yarn workspace @wenlock/web build",
+    "web:lint": "yarn workspace @wenlock/web lint",
+    "web:preview": "yarn workspace @wenlock/web preview",
+    "api:dev": "yarn workspace @wenlock/api start:dev",
+    "api:build": "yarn workspace @wenlock/api build",
+    "api:lint": "yarn workspace @wenlock/api lint",
+    "api:start": "yarn workspace @wenlock/api start:prod",
+    "api:test": "yarn workspace @wenlock/api test"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
