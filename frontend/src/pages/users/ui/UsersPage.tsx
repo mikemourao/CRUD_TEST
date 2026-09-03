@@ -13,6 +13,7 @@ import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded'
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined'
 import {
   Alert,
+  type AlertColor,
   Box,
   Button,
   CircularProgress,
@@ -29,18 +30,25 @@ import {
   Typography,
   Snackbar,
 } from '@mui/material'
-import { getUsers, type PaginatedUsers } from '@entities/user'
+import { getUsers, type PaginatedUsers, type User } from '@entities/user'
+import { DeleteUserDialog } from '@features/delete-user'
 import { ViewUserDrawer } from '@features/view-user'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 const itemsPerPage = 15
 const emptyResult: PaginatedUsers = { data: [], total: 0, page: 1, limit: itemsPerPage, totalPages: 0 }
 
+interface PageNotification {
+  message: string
+  severity: AlertColor
+}
+
 export function UsersPage() {
   const navigate = useNavigate()
   const location = useLocation()
-  const [successMessage, setSuccessMessage] = useState<string | null>(
-    (location.state as { successMessage?: string } | null)?.successMessage ?? null,
+  const routeState = location.state as { successMessage?: string; notification?: PageNotification } | null
+  const [notification, setNotification] = useState<PageNotification | null>(
+    routeState?.notification ?? (routeState?.successMessage ? { message: routeState.successMessage, severity: 'success' } : null),
   )
   const [search, setSearch] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
@@ -50,6 +58,7 @@ export function UsersPage() {
   const [error, setError] = useState<string | null>(null)
   const [reloadKey, setReloadKey] = useState(0)
   const [viewingUserId, setViewingUserId] = useState<string | null>(null)
+  const [deletingUser, setDeletingUser] = useState<User | null>(null)
 
   useEffect(() => {
     const timeout = window.setTimeout(() => setDebouncedSearch(search.trim()), 350)
@@ -90,7 +99,7 @@ export function UsersPage() {
 
   return (
     <Box sx={{ width: '100%', height: { md: 'calc(100vh - 74px)' }, minHeight: 440, display: 'flex', flexDirection: 'column' }}>
-      <Typography component="h1" sx={{ fontSize: 23, fontWeight: 600, lineHeight: 1.25, mb: 0.5 }}>
+      <Typography component="h1" sx={{ color: '#0b2b25', fontSize: { xs: 30, md: 38 }, fontWeight: 700, lineHeight: 1.2, mb: 1 }}>
         Usuários
       </Typography>
 
@@ -111,9 +120,9 @@ export function UsersPage() {
             },
           }}
           sx={{
-            width: { xs: '100%', sm: 152 },
+            width: { xs: '100%', sm: 220 },
             bgcolor: '#fff',
-            '& .MuiOutlinedInput-root': { height: 31, fontSize: 10, boxShadow: '0 2px 4px rgba(0,0,0,.18)' },
+            '& .MuiOutlinedInput-root': { height: 40, fontSize: 14, boxShadow: '0 2px 4px rgba(0,0,0,.18)' },
           }}
         />
         <Button
@@ -121,7 +130,7 @@ export function UsersPage() {
           variant="contained"
           disableElevation
           startIcon={<AddRoundedIcon sx={{ fontSize: '18px !important' }} />}
-          sx={{ height: 30, px: 1.5, borderRadius: 1, bgcolor: '#069db4', fontSize: 10, whiteSpace: 'nowrap' }}
+          sx={{ height: 40, px: 2, borderRadius: 1, bgcolor: '#069db4', color: '#fff', fontSize: 14, fontWeight: 700, whiteSpace: 'nowrap' }}
         >
           Cadastrar Usuário
         </Button>
@@ -141,8 +150,8 @@ export function UsersPage() {
         ) : result.data.length === 0 ? (
           <Box sx={{ height: '100%', display: 'grid', placeItems: 'center', textAlign: 'center', px: 2 }}>
             <Box>
-              <Typography sx={{ fontSize: 13, fontWeight: 600, mb: 0.25 }}>Nenhum Usuário Registrado</Typography>
-              <Typography sx={{ fontSize: 10.5 }}>Clique em “Cadastrar Usuário” para começar a cadastrar.</Typography>
+              <Typography sx={{ fontSize: 16, fontWeight: 700, mb: 0.5 }}>Nenhum Usuário Registrado</Typography>
+              <Typography sx={{ fontSize: 14 }}>Clique em “Cadastrar Usuário” para começar a cadastrar.</Typography>
             </Box>
           </Box>
         ) : (
@@ -157,14 +166,14 @@ export function UsersPage() {
                 <TableRow>
                   <TableCell
                     sx={{
-                      height: 25,
+                      height: 36,
                       py: 0,
                       px: 1,
                       bgcolor: '#0b1930',
                       color: '#fff',
                       border: 0,
                       borderRadius: '3px 0 0 3px',
-                      fontSize: 8,
+                      fontSize: 14,
                       fontWeight: 500,
                     }}
                   >
@@ -173,15 +182,15 @@ export function UsersPage() {
                   <TableCell
                     align="center"
                     sx={{
-                      width: 92,
-                      height: 25,
+                      width: 132,
+                      height: 36,
                       py: 0,
                       px: 0.5,
                       bgcolor: '#0b1930',
                       color: '#fff',
                       border: 0,
                       borderRadius: '0 3px 3px 0',
-                      fontSize: 8,
+                      fontSize: 14,
                       fontWeight: 500,
                     }}
                   >
@@ -192,17 +201,17 @@ export function UsersPage() {
               <TableBody>
                 {result.data.map((user) => (
                   <TableRow key={user.id} sx={{ '& td': { bgcolor: '#fff', borderTop: '1px solid #e4e4e4', borderBottom: '1px solid #e4e4e4' } }}>
-                    <TableCell sx={{ height: 31, py: 0, px: 1, borderLeft: '1px solid #e4e4e4', borderRadius: '3px 0 0 3px', fontSize: 8 }}>
+                    <TableCell sx={{ height: 42, py: 0, px: 1, borderLeft: '1px solid #e4e4e4', borderRadius: '3px 0 0 3px', color: '#0b2b25', fontSize: 14, fontWeight: 500 }}>
                       {user.name}
                     </TableCell>
-                    <TableCell align="center" sx={{ height: 31, py: 0, px: 0.25, borderRight: '1px solid #e4e4e4', borderRadius: '0 3px 3px 0' }}>
+                    <TableCell align="center" sx={{ height: 42, py: 0, px: 0.25, borderRight: '1px solid #e4e4e4', borderRadius: '0 3px 3px 0' }}>
                       <IconButton
                         type="button"
                         aria-label={`Visualizar ${user.name}`}
                         onClick={() => setViewingUserId(user.id)}
                         size="small"
                         sx={{
-                          p: 0.5,
+                          p: 0.75,
                           mx: 0.125,
                           color: '#0b2930',
                           borderRadius: 0.5,
@@ -216,15 +225,16 @@ export function UsersPage() {
                           },
                         }}
                       >
-                        <VisibilityOutlinedIcon className="outlined-action-icon" sx={{ fontSize: 15 }} />
-                        <VisibilityRoundedIcon className="filled-action-icon" sx={{ fontSize: 15 }} />
+                        <VisibilityOutlinedIcon className="outlined-action-icon" sx={{ fontSize: 19 }} />
+                        <VisibilityRoundedIcon className="filled-action-icon" sx={{ fontSize: 19 }} />
                       </IconButton>
                       <IconButton
                         type="button"
                         aria-label={`Editar ${user.name}`}
+                        onClick={() => navigate(`/usuarios/${user.id}/editar`)}
                         size="small"
                         sx={{
-                          p: 0.5,
+                          p: 0.75,
                           mx: 0.125,
                           color: '#0b2930',
                           borderRadius: 0.5,
@@ -238,15 +248,16 @@ export function UsersPage() {
                           },
                         }}
                       >
-                        <EditOutlinedIcon className="outlined-action-icon" sx={{ fontSize: 15 }} />
-                        <EditRoundedIcon className="filled-action-icon" sx={{ fontSize: 15 }} />
+                        <EditOutlinedIcon className="outlined-action-icon" sx={{ fontSize: 19 }} />
+                        <EditRoundedIcon className="filled-action-icon" sx={{ fontSize: 19 }} />
                       </IconButton>
                       <IconButton
                         type="button"
                         aria-label={`Excluir ${user.name}`}
+                        onClick={() => setDeletingUser(user)}
                         size="small"
                         sx={{
-                          p: 0.5,
+                          p: 0.75,
                           mx: 0.125,
                           color: '#0b1930',
                           borderRadius: 0.5,
@@ -260,8 +271,8 @@ export function UsersPage() {
                           },
                         }}
                       >
-                        <DeleteOutlineRoundedIcon className="outlined-action-icon" sx={{ fontSize: 15 }} />
-                        <DeleteRoundedIcon className="filled-action-icon" sx={{ fontSize: 15 }} />
+                        <DeleteOutlineRoundedIcon className="outlined-action-icon" sx={{ fontSize: 19 }} />
+                        <DeleteRoundedIcon className="filled-action-icon" sx={{ fontSize: 19 }} />
                       </IconButton>
                     </TableCell>
                   </TableRow>
@@ -272,29 +283,47 @@ export function UsersPage() {
         )}
       </Paper>
 
-      <Box sx={{ minHeight: 38, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2 }}>
-        <Typography sx={{ fontSize: 8 }}>Total de itens: {result.total || ''}</Typography>
+      <Box sx={{ minHeight: 44, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2 }}>
+        <Typography sx={{ fontSize: 12 }}>Total de itens: {result.total || ''}</Typography>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.25 }}>
-          <Typography sx={{ fontSize: 8, mr: 1.5 }}>Itens por página&nbsp; {itemsPerPage}</Typography>
+          <Typography sx={{ fontSize: 12, mr: 1.5 }}>Itens por página&nbsp; {itemsPerPage}</Typography>
           <IconButton aria-label="Primeira página" size="small" disabled={!hasPreviousPage} onClick={() => setPage(1)} sx={{ p: 0.5 }}><FirstPageRoundedIcon sx={{ fontSize: 14 }} /></IconButton>
           <IconButton aria-label="Página anterior" size="small" disabled={!hasPreviousPage} onClick={() => setPage((current) => current - 1)} sx={{ p: 0.5 }}><ChevronLeftRoundedIcon sx={{ fontSize: 14 }} /></IconButton>
-          <Box sx={{ width: 24, height: 24, display: 'grid', placeItems: 'center', bgcolor: '#069db4', color: '#fff', borderRadius: 0.5, fontSize: 9 }}>{page}</Box>
+          <Box sx={{ width: 30, height: 30, display: 'grid', placeItems: 'center', bgcolor: '#069db4', color: '#fff', borderRadius: 0.5, fontSize: 12, fontWeight: 600 }}>{page}</Box>
           <IconButton aria-label="Próxima página" size="small" disabled={!hasNextPage} onClick={() => setPage((current) => current + 1)} sx={{ p: 0.5 }}><ChevronRightRoundedIcon sx={{ fontSize: 14 }} /></IconButton>
           <IconButton aria-label="Última página" size="small" disabled={!hasNextPage} onClick={() => setPage(totalPages)} sx={{ p: 0.5 }}><LastPageRoundedIcon sx={{ fontSize: 14 }} /></IconButton>
-          <Typography sx={{ fontSize: 8, ml: 0.25 }}>de {totalPages}</Typography>
+          <Typography sx={{ fontSize: 12, ml: 0.25 }}>de {totalPages}</Typography>
         </Box>
       </Box>
       <Snackbar
-        open={Boolean(successMessage)}
+        open={Boolean(notification)}
         autoHideDuration={4000}
-        onClose={() => setSuccessMessage(null)}
+        onClose={() => setNotification(null)}
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
-        <Alert severity="success" variant="filled" onClose={() => setSuccessMessage(null)}>
-          {successMessage}
+        <Alert
+          severity={notification?.severity ?? 'success'}
+          variant="filled"
+          onClose={() => setNotification(null)}
+          sx={notification?.severity === 'warning' ? { bgcolor: '#ff7900', color: '#fff', '& .MuiAlert-icon': { color: '#fff' } } : undefined}
+        >
+          {notification?.message}
         </Alert>
       </Snackbar>
       <ViewUserDrawer userId={viewingUserId} onClose={() => setViewingUserId(null)} />
+      <DeleteUserDialog
+        user={deletingUser}
+        onClose={() => setDeletingUser(null)}
+        onDeleted={(deletedUser) => {
+          setDeletingUser(null)
+          setNotification({ message: `${deletedUser.name} foi excluído com sucesso.`, severity: 'success' })
+          if (result.data.length === 1 && page > 1) {
+            setPage((current) => current - 1)
+          } else {
+            setReloadKey((key) => key + 1)
+          }
+        }}
+      />
     </Box>
   )
 }

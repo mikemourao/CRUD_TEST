@@ -51,29 +51,29 @@ function SidebarContent({ collapsed = false, onNavigate }: { collapsed?: boolean
       </Box>
 
       <List sx={{ px: 1.5, py: 0 }}>
-        <ListItemButton selected={isHome} onClick={() => goTo('/')} sx={{ minHeight: 30, borderRadius: 1, mb: 0.75, px: 1.5, '&.Mui-selected': { bgcolor: '#08acc1', '&:hover': { bgcolor: '#08acc1' } } }}>
+        <ListItemButton selected={isHome} onClick={() => goTo('/')} sx={{ minHeight: 38, borderRadius: 1, mb: 0.75, px: 1.5, '&.Mui-selected': { bgcolor: '#08acc1', '&:hover': { bgcolor: '#08acc1' } } }}>
           <ListItemIcon sx={{ minWidth: collapsed ? 0 : 30, mr: collapsed ? 0 : undefined, color: isHome ? '#071528' : '#c7ced9', justifyContent: 'center' }}><HomeRoundedIcon fontSize="small" /></ListItemIcon>
-          {!collapsed && <ListItemText primary="Home" primaryTypographyProps={{ fontSize: 10, fontWeight: 600 }} />}
+          {!collapsed && <ListItemText primary="Home" primaryTypographyProps={{ fontSize: 12, fontWeight: 700 }} />}
         </ListItemButton>
 
-        <ListItemButton onClick={() => setAccessOpen((open) => !open)} sx={{ minHeight: 32, borderRadius: 1, px: 1.5, color: '#c7ced9' }}>
+        <ListItemButton onClick={() => setAccessOpen((open) => !open)} sx={{ minHeight: 40, borderRadius: 1, px: 1.5, color: '#c7ced9' }}>
           <ListItemIcon sx={{ minWidth: collapsed ? 0 : 30, mr: collapsed ? 0 : undefined, color: '#c7ced9', justifyContent: 'center' }}><AdminPanelSettingsOutlinedIcon fontSize="small" /></ListItemIcon>
-          {!collapsed && <ListItemText primary="Controle de Acesso" primaryTypographyProps={{ fontSize: 9.5, whiteSpace: 'nowrap' }} />}
+          {!collapsed && <ListItemText primary="Controle de Acesso" primaryTypographyProps={{ fontSize: 12, fontWeight: 500, whiteSpace: 'nowrap' }} />}
           {!collapsed && <ExpandMoreRoundedIcon fontSize="small" sx={{ transform: accessOpen ? 'rotate(0deg)' : 'rotate(-90deg)', transition: 'transform .2s' }} />}
         </ListItemButton>
 
         {accessOpen && !collapsed && (
-          <ListItemButton selected={isUsers} onClick={() => goTo('/usuarios')} sx={{ minHeight: 30, pl: 4.8, borderRadius: 1, color: isUsers ? '#071528' : '#c7ced9', '&.Mui-selected': { bgcolor: '#08acc1', '&:hover': { bgcolor: '#08acc1' } } }}>
+          <ListItemButton selected={isUsers} onClick={() => goTo('/usuarios')} sx={{ minHeight: 38, pl: 4.8, borderRadius: 1, color: isUsers ? '#071528' : '#c7ced9', '&.Mui-selected': { bgcolor: '#08acc1', '&:hover': { bgcolor: '#08acc1' } } }}>
             <ListItemIcon sx={{ minWidth: 28, color: isUsers ? '#071528' : '#c7ced9' }}><PersonOutlineRoundedIcon sx={{ fontSize: 18 }} /></ListItemIcon>
-            <ListItemText primary="Usuários" primaryTypographyProps={{ fontSize: 9.5 }} />
+            <ListItemText primary="Usuários" primaryTypographyProps={{ fontSize: 12, fontWeight: isUsers ? 700 : 500 }} />
           </ListItemButton>
         )}
       </List>
 
       <Box sx={{ mt: 'auto', px: collapsed ? 0 : 3, pb: 2.5, color: '#fff', textAlign: collapsed ? 'center' : 'left' }}>
-        {!collapsed && <Typography fontSize={11}>© WenLock</Typography>}
-        {!collapsed && <Typography fontSize={8.5} sx={{ opacity: 0.65 }}>Power by Conecthus</Typography>}
-        <Typography fontSize={collapsed ? 6 : 7} sx={{ opacity: 0.65, mt: collapsed ? 0 : 0.25 }}>V 0.0.0</Typography>
+        {!collapsed && <Typography fontSize={12} fontWeight={700}>© WenLock</Typography>}
+        {!collapsed && <Typography fontSize={10} sx={{ opacity: 0.65 }}>Power by Conecthus</Typography>}
+        <Typography fontSize={collapsed ? 7 : 9} sx={{ opacity: 0.65, mt: collapsed ? 0 : 0.25 }}>V 0.0.0</Typography>
       </Box>
     </Box>
   )

@@ -28,3 +28,5 @@ export interface CreateUserPayload {
   registration: string
   password: string
 }
+
+export type UpdateUserPayload = Partial<CreateUserPayload>

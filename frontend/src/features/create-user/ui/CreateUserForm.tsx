@@ -15,6 +15,7 @@ import {
 } from '@mui/material'
 import { useForm } from 'react-hook-form'
 import { createUser } from '@entities/user'
+import { ConfirmCancelDialog } from '@shared/ui'
 import { createUserSchema, type CreateUserFormValues } from '../model/create-user-schema'
 
 interface CreateUserFormProps {
@@ -24,21 +25,23 @@ interface CreateUserFormProps {
 
 const fieldSx = {
   '& .MuiFilledInput-root': {
-    height: 31,
+    minHeight: 46,
     borderRadius: 0.5,
     bgcolor: '#f1f1f1',
-    fontSize: 10,
+    fontSize: 14,
     '&:hover': { bgcolor: '#ededed' },
     '&.Mui-focused': { bgcolor: '#f1f1f1' },
   },
-  '& .MuiFilledInput-input': { px: 1.25, py: 0.9 },
-  '& .MuiFormHelperText-root': { minHeight: 13, mt: 0.25, mr: 0, textAlign: 'right', fontSize: 6.5 },
+  '& .MuiFilledInput-input': { px: 1.25, py: 1.4 },
+  '& .MuiFilledInput-input::placeholder': { color: '#667370', opacity: 1 },
+  '& .MuiFormHelperText-root': { minHeight: 16, mt: 0.25, mr: 0, textAlign: 'right', fontSize: 10 },
 } as const
 
 export function CreateUserForm({ onCancel, onSuccess }: CreateUserFormProps) {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmation, setShowConfirmation] = useState(false)
   const [requestError, setRequestError] = useState<string | null>(null)
+  const [cancelConfirmationOpen, setCancelConfirmationOpen] = useState(false)
   const {
     register,
     handleSubmit,
@@ -66,7 +69,7 @@ export function CreateUserForm({ onCancel, onSuccess }: CreateUserFormProps) {
 
   const passwordAdornment = (visible: boolean, toggle: () => void, label: string) => (
     <IconButton aria-label={label} onClick={toggle} edge="end" size="small" tabIndex={-1}>
-      {visible ? <VisibilityOffOutlinedIcon sx={{ fontSize: 16 }} /> : <VisibilityOutlinedIcon sx={{ fontSize: 16 }} />}
+      {visible ? <VisibilityOffOutlinedIcon sx={{ fontSize: 19 }} /> : <VisibilityOutlinedIcon sx={{ fontSize: 19 }} />}
     </IconButton>
   )
 
@@ -75,7 +78,7 @@ export function CreateUserForm({ onCancel, onSuccess }: CreateUserFormProps) {
       {requestError && <Alert severity="error" sx={{ mb: 1, py: 0 }}>{requestError}</Alert>}
 
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.25 }}>
-        <Typography sx={{ fontSize: 7.5, fontWeight: 600, whiteSpace: 'nowrap' }}>Dados do Usuário</Typography>
+        <Typography sx={{ color: '#0b2b25', fontSize: 12, fontWeight: 700, whiteSpace: 'nowrap' }}>Dados do Usuário</Typography>
         <Divider sx={{ flex: 1 }} />
       </Box>
 
@@ -111,7 +114,7 @@ export function CreateUserForm({ onCancel, onSuccess }: CreateUserFormProps) {
       </Box>
 
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1.25, mb: 1.25 }}>
-        <Typography sx={{ fontSize: 7.5, fontWeight: 600, whiteSpace: 'nowrap' }}>Dados de acesso</Typography>
+        <Typography sx={{ color: '#0b2b25', fontSize: 12, fontWeight: 700, whiteSpace: 'nowrap' }}>Dados de acesso</Typography>
         <Divider sx={{ flex: 1 }} />
       </Box>
 
@@ -151,13 +154,18 @@ export function CreateUserForm({ onCancel, onSuccess }: CreateUserFormProps) {
       </Box>
 
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 0.75, mt: 1.25 }}>
-        <Button type="button" variant="outlined" onClick={onCancel} disabled={isSubmitting} sx={{ width: 92, height: 31, borderColor: '#274a4b', color: '#102829', fontSize: 9 }}>
+        <Button type="button" variant="outlined" onClick={() => setCancelConfirmationOpen(true)} disabled={isSubmitting} sx={{ width: 108, height: 38, borderColor: '#274a4b', color: '#102829', fontSize: 14 }}>
           Cancelar
         </Button>
-        <Button type="submit" variant="contained" disableElevation disabled={!isValid || isSubmitting} sx={{ width: 92, height: 31, fontSize: 9 }}>
+        <Button type="submit" variant="contained" disableElevation disabled={!isValid || isSubmitting} sx={{ width: 108, height: 38, fontSize: 14 }}>
           {isSubmitting ? <CircularProgress size={15} color="inherit" /> : 'Cadastrar'}
         </Button>
       </Box>
+      <ConfirmCancelDialog
+        open={cancelConfirmationOpen}
+        onClose={() => setCancelConfirmationOpen(false)}
+        onConfirm={onCancel}
+      />
     </Paper>
   )
 }

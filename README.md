@@ -44,8 +44,9 @@ O projeto reúne uma interface construída com React e uma API RESTful em NestJS
 | Banco de dados MySQL | Implementado |
 | Swagger UI | Implementado |
 | Cadastro no frontend | Implementado |
-| Edição no frontend | Próxima etapa |
-| Exclusão no frontend | Próxima etapa |
+| Visualização no frontend | Implementado |
+| Edição no frontend | Implementado |
+| Exclusão no frontend | Implementado |
 
 ## Arquitetura
 
